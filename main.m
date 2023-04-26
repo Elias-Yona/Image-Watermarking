@@ -93,28 +93,28 @@ SSIM_plot(alpha,SSIM,attacks);
 %% FIGURE 6. Invisibility performance: Watermarked images and corresponding extracted
 %  watermarks with various sizes and their corresponding PSNRs, SSIMs and NCs.
 
-% method = 'DWT-SVD';
-% alpha =0.05;
-% attack = 'No Attack';
-% param = 0;
-% 
-% figure
-% for i=1:3
-%     watermark_logoi = imresize(watermark_logo,2^(-i+1));
-%     [watermarked_image, extracted_watermark, encrypted_image] = watermark(cover_image,watermark_logoi,method,alpha,attack,param);
-%     PSNR = psnr(watermarked_image, cover_image);
-%     SSIM = ssim(watermarked_image, cover_image);
-%     NC = nc(watermark_logoi,extracted_watermark);
-%     subplot(2,3,i);
-%     imshow(watermarked_image);
-%     title(['watermarked image';'watermark size '+string(length(watermark_logoi))+'x'+string(length(watermark_logoi))]);
-%     xlabel(['PSNR='+string(PSNR);'SSIM='+string(SSIM)]);
-%     subplot(2,3,i+3);
-%     imshow(extracted_watermark);
-%     title('extracted watermark');
-%     xlabel('NC='+string(NC));
-% end
-% sgtitle('DWT-SVD: Invisibility performance: watermarks with various sizes; alpha='+string(alpha)+'; No Attack');
+method = 'DWT-SVD';
+alpha =0.05;
+attack = 'No Attack';
+param = 0;
+
+figure
+for i=1:3
+    watermark_logoi = imresize(watermark_logo,2^(-i+1));
+    [watermarked_image, extracted_watermark, encrypted_image] = watermark(cover_image,watermark_logoi,method,alpha,attack,param);
+    PSNR = psnr(watermarked_image, cover_image);
+    SSIM = ssim(watermarked_image, cover_image);
+    NC = nc(watermark_logoi,extracted_watermark);
+    subplot(2,3,i);
+    imshow(watermarked_image);
+    title(['watermarked image';'watermark size '+string(length(watermark_logoi))+'x'+string(length(watermark_logoi))]);
+    xlabel(['PSNR='+string(PSNR);'SSIM='+string(SSIM)]);
+    subplot(2,3,i+3);
+    imshow(extracted_watermark);
+    title('extracted watermark');
+    xlabel('NC='+string(NC));
+end
+sgtitle('DWT-SVD: Invisibility performance: watermarks with various sizes; alpha='+string(alpha)+'; No Attack');
 
 %% FIGURE 7: plot watermarked image for different attacks and watermark sizes
 method = 'DWT-SVD';
