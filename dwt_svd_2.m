@@ -1,5 +1,4 @@
-
-function [encrypted_watermark, decrypted_watermark, watermarked_image] = dwt_svd(watermark_logo, cover_image, alpha, attack, param)
+function [encrypted_watermark, decrypted_watermark, watermarked_image] = dwt_svd_2(watermark_logo, cover_image)
    % Load host/cover image A and watermark image W
     A = cover_image;
     W = watermark_logo;

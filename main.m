@@ -26,7 +26,7 @@ alpha = 0.5;
 attack = 'Motion blur';         % You can choose other attacks
 param = 0.5;                    % attack parameter
 
-[watermarked_image, extracted_watermark, encrypted_image] = watermark(cover_image, ... 
+[watermarked_image, extracted_watermark, encrypted_watermark] = watermark(cover_image, ... 
     watermark_logo,method,alpha,attack,param);
 
 
