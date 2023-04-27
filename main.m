@@ -42,7 +42,7 @@ subplot(3, 2, 3);
 imshow(watermark_logo);
 xlabel('c) Watermark logo');
 subplot(3, 2, 4);
-imshow(encrypted_image);
+imshow(encrypted_watermark);
 xlabel('d) Encrypted Watermark logo');
 subplot(3, 2, 5);
 imshow(extracted_watermark);

@@ -50,22 +50,23 @@ function [encrypted_watermark, decrypted_watermark, watermarked_image] = dwt_svd
     % Perform lossless encryption using Arnold Cat Map
     X_1D = reshape(X', [], 1);
     K = encryptArnoldCat(X_1D, 10);
-    
+
+  
     % Reshape encrypted watermark to matrix form
     % num_cols = sum(M);
     num_cols = size(X, 16);
     num_rows = ceil(N / num_cols);
     K_2D = uint8(reshape(K, [], num_cols) * 255);
     
-    % Plot the encrypted watermark and the unencrypted watermark
-    % Decrypt the watermark
-    K_decrypted_1D = decryptArnoldCat(K,10);
-    K_decrypted = reshape(K_decrypted_1D, size(X,2), [])';
-    
-    % Decrypt the selective encryption
+
     W_decrypted = selectiveDecrypt(W_encrypted, key);
 
     decrypted_watermark = W_decrypted;
     encrypted_watermark = W_encrypted;
-    watermarked_image = Attacks(K_decrypted,attack,param);
+    watermarked_image = Attacks(K_2D,attack,param);
+
+    %% NEED TO FIND A WAY OF WORKING WITH ARNOLD CAT MAPS
+    %% ALL PREVIOUS ATTEMPTS WERE NOT SUCCESFULL
+    
+
 end
