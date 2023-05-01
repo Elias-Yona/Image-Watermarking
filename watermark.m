@@ -2,10 +2,10 @@
 %  inputs: orginal image, watermark image, watermarking method, applied 
 %  attack
 %  Output: watermarked image, extracted watermark image considering attacks
-function [encrypted_watermark, decrypted_watermark, watermarked_image] = watermark(cover_image,watermark_logo,method,alpha,attack,param)
+function [watermarked_image, original_watermark, extracted_watermark, encrypted_watermark] = watermark(watermark_logo,cover_image,block_size,method,attack,param,alpha)
     switch method
         case 'DWT-SVD'
-           [encrypted_watermark, decrypted_watermark, watermarked_image] = dwt_svd(cover_image,watermark_logo,alpha,attack,param);
+           [watermarked_image, original_watermark, extracted_watermark, encrypted_watermark] = dwt_svd(watermark_logo,cover_image,block_size,attack,param);
         otherwise
             errordlg('Please specify a method!');
     end

@@ -10,6 +10,7 @@ cover_image=imread('lena512.bmp');
 watermark_logo=imread('cman.tif');
 
 %% Plot cover image and watermark image
+% Figure 1
 figure
 subplot(1,2,1);
 imshow(cover_image);
@@ -25,43 +26,54 @@ method = 'DWT-SVD';             % Apply 'DWT-SVD Method
 alpha = 0.5;
 attack = 'Motion blur';         % You can choose other attacks
 param = 0.5;                    % attack parameter
+block_size = 8;                 % block size
 
-[watermarked_image, extracted_watermark, encrypted_watermark] = watermark(cover_image, ... 
-    watermark_logo,method,alpha,attack,param);
+[watermarked_image, original_watermark, extracted_watermark, encrypted_watermark] = watermark(watermark_logo, ...
+    cover_image,block_size,method,attack,param,alpha);
 
 
 % Plot results
-figure;
-subplot(3, 2, 1);
-imshow(cover_image);
-xlabel('a) Cover image');
-subplot(3, 2, 2);
-imshow(watermarked_image);
-xlabel('b) Watermarked image');
-subplot(3, 2, 3);
-imshow(watermark_logo);
-xlabel('c) Watermark logo');
-subplot(3, 2, 4);
-imshow(encrypted_watermark);
-xlabel('d) Encrypted Watermark logo');
-subplot(3, 2, 5);
-imshow(extracted_watermark);
-xlabel('e) Extracted watermark');
-sgtitle(['DWT-SVD method \alpha = '+string(alpha) attack]);
+% Figure 2
+% figure;
+% subplot(3, 2, 1);
+% imshow(cover_image);
+% xlabel('a) Cover image');
+% subplot(3, 2, 2);
+% imshow(watermarked_image);
+% xlabel('b) Watermarked image');
+% subplot(3, 2, 3);
+% imshow(watermark_logo);
+% xlabel('c) Watermark logo');
+% subplot(3, 2, 4);
+% imshow(encrypted_watermark);
+% xlabel('d) Encrypted Watermark logo');
+% subplot(3, 2, 5);
+% imshow(extracted_watermark);
+% xlabel('e) Extracted watermark');
+% sgtitle(['DWT-SVD method \alpha = '+string(alpha) attack]);
 
-%% NC vs alpha DWT-SVD figure 3
+%% BER and NC
+% Define the image names
+% Figure 3
+% image_names = {'cameraman.tif', 'lena512.bmp', 'peppers.png', 'liftingbody.png', 'rice.png'};
+% block_sizes = [8, 8, 8, 8, 8];
+% NC_BER(watermark_logo, image_names, block_sizes, 'No Attack');
+
+%% NC vs alpha DWT-SVD
 %  Plot normalized correlation  for different alpha
+% Figure 4
 method = 'DWT-SVD';
 alpha = 0.005:0.005:0.5;
-attacks = {'No Attack'; 'Gaussian low-pass filter'; 'Median';...
+attacks = {'No Attack';'Gaussian low-pass filter'; 'Median';...
     'Gaussian noise'; 'Salt and pepper noise';'Speckle noise';...
     'JPEG compression'; 'JPEG2000 compression'; 'Sharpening attack';...
     'Histogram equalization'; 'Average filter'; 'Motion blur'};
 
 % Attack papameters
 params = [0; 3; 3; 0.001; 0; 0; 50; 12; 0.8; 0; 0; 0];
-NC = NC_alpha(cover_image,watermark_logo,method,alpha,attacks,params);
-%%  plot NC vs alpha figure 3
+block_size=8;
+NC = NC_alpha(watermark_logo,cover_image,block_size,method,alpha,attacks,params);
+%%  plot NC vs alpha figure 4
 NC_plot(alpha,NC,attacks);
 
 %% PSNR vs alpha DWT-SVD
@@ -72,9 +84,10 @@ attacks = {'No Attack'; 'Gaussian low-pass filter'; 'Median'; 'Gaussian noise';.
     'JPEG2000 compression'; 'Sharpening attack'; 'Histogram equalization';...
     'Average filter'; 'Motion blur'};
 params = [0; 3; 3; 0.001; 0; 0; 50; 12; 0.8; 0; 0; 0];
-PSNR = PSNR_alpha(cover_image,watermark_logo,method,alpha,attacks,params);
+block_size = 8;
+PSNR = PSNR_alpha(cover_image,watermark_logo,method,alpha,attacks,params,block_size);
 
-%% plot PSNR vs alpha figure 4
+%% plot PSNR vs alpha figure 5
 PSNR_plot(alpha,PSNR,attacks);
 
 %% SSIM vs alpha DWT-SVD
@@ -85,23 +98,25 @@ attacks = {'No Attack'; 'Gaussian low-pass filter'; 'Median'; 'Gaussian noise';.
     'JPEG2000 compression'; 'Sharpening attack'; 'Histogram equalization';...
     'Average filter'; 'Motion blur'};
 params = [0; 3; 3; 0.001; 0; 0; 50; 12; 0.8; 0; 0; 0];
-SSIM = SSIM_alpha(cover_image,watermark_logo,method,alpha,attacks,params);
+block_size = 8;
+SSIM = SSIM_alpha(cover_image,watermark_logo,method,alpha,attacks,params,block_size);
 
-%% plot SSIM vs alpha figure 5
+%% plot SSIM vs alpha figure 6
 SSIM_plot(alpha,SSIM,attacks);
 
-%% FIGURE 6. Invisibility performance: Watermarked images and corresponding extracted
+%% FIGURE 7. Invisibility performance: Watermarked images and corresponding extracted
 %  watermarks with various sizes and their corresponding PSNRs, SSIMs and NCs.
 
 method = 'DWT-SVD';
 alpha =0.05;
 attack = 'No Attack';
 param = 0;
+block_size = 8;
 
 figure
 for i=1:3
     watermark_logoi = imresize(watermark_logo,2^(-i+1));
-    [watermarked_image, extracted_watermark, encrypted_image] = watermark(cover_image,watermark_logoi,method,alpha,attack,param);
+    [watermarked_image, original_watermark, extracted_watermark, encrypted_watermark] = watermark(watermark_logoi,cover_image,block_size,method,attack,param,alpha);
     PSNR = psnr(watermarked_image, cover_image);
     SSIM = ssim(watermarked_image, cover_image);
     NC = nc(watermark_logoi,extracted_watermark);
@@ -116,7 +131,7 @@ for i=1:3
 end
 sgtitle('DWT-SVD: Invisibility performance: watermarks with various sizes; alpha='+string(alpha)+'; No Attack');
 
-%% FIGURE 7: plot watermarked image for different attacks and watermark sizes
+%% FIGURE 8: plot watermarked image for different attacks and watermark sizes
 method = 'DWT-SVD';
 alpha =0.05;
 attacks = {'No Attack'; 'Gaussian low-pass filter'; 'Median'; 'Gaussian noise';...
@@ -126,12 +141,14 @@ attacks = {'No Attack'; 'Gaussian low-pass filter'; 'Median'; 'Gaussian noise';.
 params = [0; 3; 3; 0.001; 0; 0; 50; 12; 0.8; 0; 0; 0];
 for i=3:-1:1
 watermark_logoi = imresize(watermark_logo,2^(1-i));
+block_size = 8;
 figure
 for j=1:length(attacks)
-    
+
     attack = string(attacks(j));
     param = params(j);
-    [watermarked_image, extracted_watermark] = watermark(cover_image,watermark_logoi,method,alpha,attack,param);
+
+    [watermarked_image, original_watermark, extracted_watermark, encrypted_watermark] = watermark(watermark_logoi,cover_image,block_size,method,attack,param,alpha);
     PSNR = psnr(watermarked_image, cover_image);
     SSIM = ssim(watermarked_image, cover_image);
     subplot(3,4,j);
@@ -142,7 +159,7 @@ end
 sgtitle(['DWT-SVD: Attacked watermarked image; Size = '+string(length(watermark_logoi))+'x'+string(length(watermark_logoi))+'; \alpha = '+string(alpha)]);
 end
 
-%% FIGURE 8: Extracted watermarks from the attacked watermarked images
+%% FIGURE 9: Extracted watermarks from the attacked watermarked images
 %  Evaluate robustness performance
 method = 'DWT-SVD';
 alpha =0.05;
@@ -151,6 +168,7 @@ attacks = {'No Attack'; 'Gaussian low-pass filter'; 'Median'; 'Gaussian noise';.
     'JPEG2000 compression'; 'Sharpening attack'; 'Histogram equalization';...
     'Average filter'; 'Motion blur'};
 params = [0; 3; 3; 0.001; 0; 0; 50; 12; 0.8; 0; 0; 0];
+block_size=8;
 for i=3:-1:1
 watermark_logoi = imresize(watermark_logo,2^(1-i));
 figure
@@ -158,7 +176,8 @@ figure
 for j=1:length(attacks)
         attack = string(attacks(j));
         param = params(j);
-        [watermarked_image, extracted_watermark, encrypted_image] = watermark(cover_image,watermark_logoi,method,alpha,attack,param);
+
+        [watermarked_image, original_watermark, extracted_watermark, encrypted_watermark] = watermark(watermark_logoi,cover_image,block_size,method,attack,param,alpha);
         NC = nc(watermark_logoi,extracted_watermark);
         subplot(3,4,j);
         imshow(extracted_watermark);
@@ -167,7 +186,7 @@ end
 sgtitle(['DWT-SVD: Extracted watermarks image from the attacked watermarked images; Size = '+string(length(watermark_logoi))+'x'+string(length(watermark_logoi))+'; \alpha = '+string(alpha)]);
 end
 
-%% FIGURE 9. NC values under different parameters suffering various attacks
+%% FIGURE 10. NC values under different parameters suffering various attacks
 watermark_logo1 = watermark_logo;
 watermark_logo2 = imresize(watermark_logo,0.5);
 watermark_logo3 = imresize(watermark_logo,0.25);
@@ -175,10 +194,12 @@ method = 'DWT-SVD';
 alpha =0.1;
 attacks = {'JPEG compression';'JPEG2000 compression';'Gaussian low-pass filter';...
            'Median';'Gaussian noise';'Sharpening attack'};
+block_size = 8;
 figure
 for j = 1:length(attacks)
     attack = string(attacks(j));
     params = 0;
+
     switch attack
         case 'JPEG compression'
             params = 10:10:90;
@@ -216,9 +237,9 @@ for j = 1:length(attacks)
     NC2 = 0;
     NC3 = 0;
     for i = 1:length(params)
-        [watermarked_image1, extracted_watermark1, encrypted_image] = watermark(cover_image,watermark_logo1,method,alpha,attack,params(i));
-        [watermarked_image2, extracted_watermark2, encrypted_image] = watermark(cover_image,watermark_logo2,method,alpha,attack,params(i));
-        [watermarked_image3, extracted_watermark3, encrypted_image] = watermark(cover_image,watermark_logo3,method,alpha,attack,params(i));
+        [watermarked_image1, original_watermark, extracted_watermark1, encrypted_image] = watermark(watermark_logo1,cover_image,block_size,method,attack,params(i),alpha);
+        [watermarked_image2, original_watermark, extracted_watermark2, encrypted_image] = watermark(watermark_logo2,cover_image,block_size,method,attack,params(i),alpha);
+        [watermarked_image3, original_watermark, extracted_watermark3, encrypted_image] = watermark(watermark_logo3,cover_image,block_size,method,attack,params(i),alpha);
         NC1(i) = nc(watermark_logo1,extracted_watermark1);
         NC2(i) = nc(watermark_logo2,extracted_watermark2);
         NC3(i) = nc(watermark_logo3,extracted_watermark3);

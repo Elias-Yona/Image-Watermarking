@@ -8,7 +8,7 @@ for j=1:length(attacks)
     attack = string(attacks(j));
     param = params(j);
     for i=1:length(alpha)
-        [watermarked_image, extracted_watermark] = watermark(cover_image,watermark_logo,method,alpha(i),attack,param);
+        [watermarked_image, original_watermark, extracted_watermark, encrypted_image] = watermark(watermark_logo,cover_image,block_size,method,attack,param,alpha(i));
         SSIM(j,i) = ssim(watermarked_image, cover_image);
     end
 end

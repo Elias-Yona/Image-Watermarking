@@ -1,22 +1,20 @@
-function K_decrypted = decryptArnoldCat(K, iterations)
-    % Determine the size of the input array
-    N = sqrt(length(K));
-    if N ~= round(N)
-        error('Input array is not of the expected size');
+function decrypted_image = decryptArnoldCat(img, key)
+    [rown, coln] = size(img);
+    inv_it_count = key;
+    inv_img = img;
+    for inc = 1:inv_it_count
+        for row = 1:rown
+            for col = 1:coln
+                nrowp = row;
+                ncolp = col;
+                for ite = 1:inc
+                    newcord = [1 1; 1 2] * [nrowp; ncolp];
+                    nrowp = newcord(1);
+                    ncolp = newcord(2);
+                end
+                inv_img(mod(nrowp - 1, rown) + 1, mod(ncolp - 1, coln) + 1) = img(row, col);
+            end
+        end
     end
-    
-    % Initialize Arnold Cat Map parameters
-    a = 2;
-    b = 3;
-    
-    % Perform the inverse Arnold Cat Map transformation
-    x = reshape(K, [N, N]);
-    y = x;
-    for i = 1:iterations
-        y = mod(y + b*x, N);
-        x = mod(x + a*y, N);
-    end
-    
-    % Convert the transformed data to a column vector
-    K_decrypted = reshape(x, [], 1);
+    decrypted_image = inv_img;
 end
